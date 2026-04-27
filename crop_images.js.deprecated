@@ -1,0 +1,60 @@
+const sharp = require('sharp');
+const path = require('path');
+
+const input = path.join(__dirname, 'public/images/car_collage.png');
+const outputDir = path.join(__dirname, 'public/images/');
+
+async function cropImages() {
+  const image = sharp(input);
+  const metadata = await image.metadata();
+  const { width, height } = metadata;
+
+  console.log(`Original Dimensions: ${width}x${height}`);
+
+  // Grid definition
+  // Row 1: 4 images
+  // Row 2: 3 images
+  // Row 3: 4 images
+  
+  const rowHeight = Math.floor(height / 3);
+  
+  // Row 1 (Top)
+  const r1Width = Math.floor(width / 4);
+  const row1 = [
+    { name: 'byd-seagull.png', x: 0, y: 0, w: r1Width, h: rowHeight },
+    { name: 'byd-e2.png', x: r1Width, y: 0, w: r1Width, h: rowHeight },
+    { name: 'byd-yuan-up.png', x: r1Width * 2, y: 0, w: r1Width, h: rowHeight },
+    { name: 'byd-song-plus-ev.png', x: r1Width * 3, y: 0, w: r1Width, h: rowHeight } // Wait, user's collage row 1 has 4.
+  ];
+
+  // Row 2 (Middle)
+  const r2Width = Math.floor(width / 3);
+  const row2 = [
+    { name: 'volkswagen-id4.png', x: 0, y: rowHeight, w: r2Width, h: rowHeight },
+    { name: 'volkswagen-id6.png', x: r2Width, y: rowHeight, w: r2Width, h: rowHeight },
+    { name: 'toyota-bz4x.png', x: r2Width * 2, y: rowHeight, w: r2Width, h: rowHeight }
+  ];
+
+  // Row 3 (Bottom)
+  const r3Width = Math.floor(width / 4);
+  const row3 = [
+    { name: 'honda-ens1.png', x: 0, y: rowHeight * 2, w: r3Width, h: rowHeight },
+    { name: 'dayun-compact.png', x: r3Width, y: rowHeight * 2, w: r3Width, h: rowHeight },
+    { name: 'suzuki-dezire.png', x: r3Width * 2, y: rowHeight * 2, w: r3Width, h: rowHeight },
+    { name: 'linxys-g230.png', x: r3Width * 3, y: rowHeight * 2, w: r3Width, h: rowHeight }
+  ];
+
+  const crops = [...row1, ...row2, ...row3];
+
+  for (const crop of crops) {
+    await sharp(input)
+      .extract({ left: crop.x, top: crop.y, width: crop.w, height: crop.h })
+      .toFile(path.join(outputDir, crop.name));
+    console.log(`Saved: ${crop.name}`);
+  }
+}
+
+cropImages().catch(err => {
+  console.error(err);
+  process.exit(1);
+});

@@ -1,0 +1,43 @@
+const sharp = require('sharp');
+const fs = require('fs');
+const path = require('path');
+
+const imagesDir = path.join(__dirname, 'public/images/');
+const files = [
+  'byd-e2.png', 'byd-seagull.png', 'byd-song-plus-ev.png', 'byd-yuan-up.png',
+  'dayun-compact.png', 'honda-ens1.png', 'linxys-g230.png', 'suzuki-dezire.png',
+  'toyota-bz4x.png', 'volkswagen-id4.png', 'volkswagen-id6.png'
+];
+
+async function enhanceImages() {
+  for (const file of files) {
+    const inputPath = path.join(imagesDir, file);
+    const outputPath = path.join(imagesDir, 'enhanced-' + file);
+    
+    await sharp(inputPath)
+      .resize(800, null, { // Upscale to 800px width
+        kernel: sharp.kernel.lanczos3,
+        withoutEnlargement: false
+      })
+      .sharpen({
+        sigma: 1.5,
+        m1: 0.5,
+        m2: 0.8
+      })
+      .modulate({
+        brightness: 1.05,
+        saturation: 1.1
+      })
+      .toFile(outputPath);
+      
+    // Rename back to original
+    fs.unlinkSync(inputPath);
+    fs.renameSync(outputPath, inputPath);
+    console.log(`Enhanced: ${file}`);
+  }
+}
+
+enhanceImages().catch(err => {
+  console.error(err);
+  process.exit(1);
+});
