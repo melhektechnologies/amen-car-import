@@ -7,13 +7,13 @@ export type Vehicle = {
   name: string;
   image: string;
   year: number;
-  transmission: "Automatic" | "Manual";
+  transmission: string;
   mileage: number;
-  fuelType: "Petrol" | "Hybrid" | "Electric";
+  fuelType: string;
   rentPrice: number;   // USD per day
   salePrice: number;   // USD
-  status: "Available" | "Reserved" | "New Arrival";
-  category: "sales" | "rental" | "both";
+  status: string;
+  category: string;
   specs: {
     engine: string;
     horsepower: number;
@@ -272,5 +272,5 @@ export const vehicles: Vehicle[] = [
     },
     description: "Honda efficiency in an electric SUV package. Smooth handling and a premium interior.",
   },
-].map(v => ({ ...v, image: `${v.image}?v=${IMAGE_VERSION}` }));
+].map(v => ({ ...v, image: `${v.image}?v=${IMAGE_VERSION}` })) as Vehicle[];
 
