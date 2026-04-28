@@ -7,13 +7,13 @@ export type Vehicle = {
   name: string;
   image: string;
   year: number;
-  transmission: string;
+  transmission: "Automatic" | "Manual";
   mileage: number;
-  fuelType: string;
+  fuelType: "Petrol" | "Hybrid" | "Electric";
   rentPrice: number;   // USD per day
   salePrice: number;   // USD
-  status: string;
-  category: string;
+  status: "Available" | "Reserved" | "New Arrival";
+  category: "rental" | "sales" | "both";
   specs: {
     engine: string;
     horsepower: number;
