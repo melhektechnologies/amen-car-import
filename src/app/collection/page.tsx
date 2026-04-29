@@ -165,19 +165,7 @@ export default function CollectionPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
               >
-                <VehicleCard
-                  slug={vehicle.slug}
-                  brand={vehicle.brand}
-                  name={vehicle.name}
-                  image={vehicle.image}
-                  year={vehicle.year}
-                  transmission={vehicle.transmission}
-                  mileage={vehicle.mileage}
-                  fuelType={vehicle.fuelType}
-                  rentPrice={vehicle.rentPrice}
-                  salePrice={vehicle.salePrice}
-                  status={vehicle.status}
-                />
+                <VehicleCard {...vehicle} />
               </motion.div>
             ))}
           </motion.div>
