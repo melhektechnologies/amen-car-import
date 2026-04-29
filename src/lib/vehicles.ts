@@ -24,9 +24,6 @@ export type Vehicle = {
   description: string;
 };
 
-// Cache buster for image updates. Increment this when you replace images in public/images/
-const v = "?v=2";
-
 const IMAGE_VERSION = "4";
 
 export const vehicles: Vehicle[] = [

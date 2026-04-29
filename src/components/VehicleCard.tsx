@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Droplets, Gauge, GitMerge, Calendar } from "lucide-react";
+import { ArrowRight, Gauge, GitMerge } from "lucide-react";
 
 interface VehicleCardProps {
   name: string;
@@ -16,15 +16,11 @@ interface VehicleCardProps {
   slug: string;
 }
 
-const badgeStyles: Record<VehicleCardProps["status"], string> = {
-  Available: "bg-white text-black",
-  Reserved: "bg-red-800 text-white",
-  "New Arrival": "bg-accent text-black",
-};
+
 
 export function VehicleCard({
-  name, image, brand, rentPrice, salePrice,
-  year, transmission, mileage, fuelType, status, slug,
+  name, image, brand, salePrice,
+  year, transmission, mileage, status, slug,
 }: VehicleCardProps) {
   // Construct WhatsApp inquiry URLs per vehicle so CTAs always work.
   const waBase = "https://wa.me/251932159546?text=";

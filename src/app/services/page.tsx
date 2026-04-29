@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check, Shield, Globe, CarFront } from "lucide-react";
+import { Shield, Globe } from "lucide-react";
 
 export default function ServicesPage() {
   return (

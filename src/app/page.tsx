@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  ChevronRight,
   ArrowRight,
   ShieldCheck,
   Car,
@@ -20,7 +19,6 @@ import { FAQSection } from "@/components/FAQSection";
 import { vehicles } from "@/lib/vehicles";
 
 // Pre-select featured vehicles for the homepage
-const featuredRentals = vehicles.filter((v) => v.category !== "sales").slice(0, 4);
 const featuredSales = vehicles.filter((v) => v.category !== "rental").slice(0, 3);
 const apexMain = vehicles[0];
 const apexSide = vehicles.slice(1, 3);
@@ -33,7 +31,11 @@ export default function Home() {
     const d1 = new Date(); d1.setDate(d1.getDate() + 2);
     const d2 = new Date(); d2.setDate(d2.getDate() + 4);
     const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    setDates({ pickup: fmt(d1), dropoff: fmt(d2) });
+    
+    // Using queueMicrotask to avoid synchronous setState in effect warning
+    queueMicrotask(() => {
+      setDates({ pickup: fmt(d1), dropoff: fmt(d2) });
+    });
   }, []);
   return (
     <div className="bg-background min-h-screen text-foreground overflow-x-hidden">

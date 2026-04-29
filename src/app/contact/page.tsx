@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Mail, MapPin, Phone, MessageCircle } from "lucide-react";
 
 export default function ContactPage() {

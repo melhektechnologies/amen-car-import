@@ -31,7 +31,7 @@ export default function AboutPage() {
                 Amen Car Import was founded with a singular vision: to bridge the gap between global automotive markets and the Ethiopian driver. 
               </p>
               <p className="text-muted leading-relaxed">
-                By maintaining a direct presence in Dubai's Al Aweer market, we bypass middlemen and high markups, delivering vehicles that are inspected to international standards. Whether it's the latest electric innovation from BYD or a reliable family SUV from Volkswagen, we ensure transparency in every transaction.
+                By maintaining a direct presence in Dubai&apos;s Al Aweer market, we bypass middlemen and high markups, delivering vehicles that are inspected to international standards. Whether it&apos;s the latest electric innovation from BYD or a reliable family SUV from Volkswagen, we ensure transparency in every transaction.
               </p>
               <div className="grid grid-cols-2 gap-8 pt-8">
                 <div>
