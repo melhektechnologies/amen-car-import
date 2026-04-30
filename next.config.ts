@@ -9,8 +9,9 @@ const nextConfig: NextConfig = {
       },
     ],
     localPatterns: [
-      { pathname: '/images/**' },
-      { pathname: '/**' },
+      {
+        pathname: '/images/**',
+      },
     ],
   },
 };

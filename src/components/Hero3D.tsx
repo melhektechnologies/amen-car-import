@@ -2,66 +2,30 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, PerspectiveCamera, ContactShadows, Float, OrbitControls, useGLTF } from "@react-three/drei";
-import { Suspense, useRef, useMemo } from "react";
+import { Suspense, useRef } from "react";
 import * as THREE from "three";
 import Image from "next/image";
 
 // High-Fidelity Car Model
+// Loads a realistic car model for a premium automotive experience
 function ShowroomCar() {
   const groupRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF("/models/car.glb");
 
-  // THE REAL FIX: The GLB has baked texture maps that override any color assignment.
-  // Solution: Deep-clone the scene, clone each material, null out the map, set white.
-  const paintedScene = useMemo(() => {
-    // Deep-clone so we never corrupt the cached shared GLTF asset
-    const clone = scene.clone(true);
-
-    clone.traverse((child) => {
-      const mesh = child as THREE.Mesh;
-      if (!mesh.isMesh) return;
-
-      const applyWhite = (mat: THREE.MeshStandardMaterial | any) => {
-        // Skip transparent parts (glass, windshield)
-        if (mat.transparent && mat.opacity < 0.8) return mat;
-
-        // Clone the material so we don't mutate the shared cached version
-        const m = mat.clone();
-
-        // NULL OUT THE TEXTURE — this is the critical step previous attempts missed
-        // Without this, the dark albedo texture overrides any color we assign
-        m.map = null;
-        m.color = new THREE.Color(1, 1, 1); // Pure white
-        m.metalness = 0.8;
-        m.roughness = 0.15;
-        m.needsUpdate = true;
-        return m;
-      };
-
-      if (Array.isArray(mesh.material)) {
-        mesh.material = mesh.material.map(applyWhite);
-      } else {
-        mesh.material = applyWhite(mesh.material);
-      }
-    });
-
-    return clone;
-  }, [scene]);
-
   useFrame((_state, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.05;
+      groupRef.current.rotation.y += delta * 0.05; // elegantly slow rotation
     }
   });
 
   return (
     <group ref={groupRef}>
       <Float speed={1.5} rotationIntensity={0.05} floatIntensity={0.1}>
-        <primitive
-          object={paintedScene}
-          scale={1.4}
-          position={[0, -0.2, 0]}
-          rotation={[0, Math.PI / 1.5, 0]}
+        <primitive 
+          object={scene} 
+          scale={1.4} 
+          position={[0, -0.2, 0]} 
+          rotation={[0, Math.PI / 1.5, 0]} 
         />
       </Float>
     </group>
@@ -77,7 +41,7 @@ export function Hero3D() {
       {/* Mobile Fallback - Enhanced with a better gradient overlay */}
       <div className="absolute inset-0 z-0 bg-[#030303] overflow-hidden pointer-events-none md:hidden">
         <Image
-          src="/hero_white_car_cinematic.png"
+          src="/images/hero_car_cinematic_1776255790678.png?v=4"
           alt="Luxury performance vehicle"
           fill
           priority
