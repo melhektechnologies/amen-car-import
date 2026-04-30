@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, PerspectiveCamera, ContactShadows, Float, OrbitControls, useGLTF } from "@react-three/drei";
-import { Suspense, useRef } from "react";
+import { Suspense, useRef, useEffect } from "react";
 import * as THREE from "three";
 import Image from "next/image";
 
@@ -11,6 +11,31 @@ import Image from "next/image";
 function ShowroomCar() {
   const groupRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF("/models/car.glb");
+
+  // Apply "Pearl White" finish to the car body for high contrast
+  useEffect(() => {
+    scene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        const mat = mesh.material as THREE.MeshStandardMaterial;
+        
+        // Target body panels based on material names or properties
+        // This makes the car "pop" against the obsidian background
+        if (mesh.name.toLowerCase().includes("body") || 
+            mesh.name.toLowerCase().includes("paint") || 
+            mat.name.toLowerCase().includes("paint")) {
+          mesh.material = new THREE.MeshPhysicalMaterial({
+            color: "#ffffff",
+            metalness: 0.8,
+            roughness: 0.15,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.03,
+            reflectivity: 1.0,
+          });
+        }
+      }
+    });
+  }, [scene]);
 
   useFrame((_state, delta) => {
     if (groupRef.current) {
@@ -41,7 +66,7 @@ export function Hero3D() {
       {/* Mobile Fallback - Enhanced with a better gradient overlay */}
       <div className="absolute inset-0 z-0 bg-[#030303] overflow-hidden pointer-events-none md:hidden">
         <Image
-          src="/images/hero_car_cinematic_1776255790678.png?v=4"
+          src="/hero_white_car_cinematic.png"
           alt="Luxury performance vehicle"
           fill
           priority
