@@ -48,13 +48,13 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#030303]/40 via-transparent to-[#030303] z-10 pointer-events-none" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,transparent_0%,rgba(3,3,3,0.4)_100%)] z-10 pointer-events-none" />
 
-        <div className="relative z-20 w-full max-w-7xl mx-auto px-6 pointer-events-none text-center">
+        <div className="relative z-20 w-full max-w-7xl mx-auto px-6 pointer-events-none text-left">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           >
-            <span className="text-[10px] font-mono tracking-[0.6em] text-accent uppercase font-bold mb-6 block">
+            <span className="text-[10px] font-mono tracking-[0.6em] text-accent uppercase font-bold mb-6 block text-left">
               Precision Engineering &bull; Global Logistics
             </span>
             <h1 className="font-display font-bold text-6xl md:text-[10rem] tracking-tighter text-white uppercase leading-[0.8] mb-8">
@@ -62,7 +62,7 @@ export default function Home() {
               <span className="text-accent italic">Elite</span>
             </h1>
 
-            <p className="mt-8 text-sm md:text-base text-white/50 font-medium max-w-lg mx-auto tracking-widest uppercase">
+            <p className="mt-8 text-sm md:text-base text-white/50 font-medium max-w-lg tracking-widest uppercase">
               Curated imports from Dubai to Addis Ababa. <br />
               Uncompromising quality, total transparency.
             </p>
@@ -71,7 +71,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.8, ease: "easeOut" }}
-              className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 pointer-events-auto"
+              className="mt-12 flex flex-col sm:flex-row items-start gap-6 pointer-events-auto"
             >
               <Link
                 href="/collection"
