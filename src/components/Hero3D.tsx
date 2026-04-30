@@ -14,23 +14,40 @@ function ShowroomCar() {
 
   // Apply "Pearl White" finish to the car body for high contrast
   useEffect(() => {
+    if (!scene) return;
     scene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         const mat = mesh.material as THREE.MeshStandardMaterial;
         
-        // Target body panels based on material names or properties
-        // This makes the car "pop" against the obsidian background
-        if (mesh.name.toLowerCase().includes("body") || 
-            mesh.name.toLowerCase().includes("paint") || 
-            mat.name.toLowerCase().includes("paint")) {
+        // EXPERT TARGETING: Catch more naming conventions for the exterior body
+        const isBodyPart = 
+          mesh.name.toLowerCase().includes("body") || 
+          mesh.name.toLowerCase().includes("paint") || 
+          mesh.name.toLowerCase().includes("exterior") ||
+          mesh.name.toLowerCase().includes("shell") ||
+          mesh.name.toLowerCase().includes("frame") ||
+          (mat && (mat.name.toLowerCase().includes("paint") || mat.name.toLowerCase().includes("body")));
+
+        // Preserve critical parts that should stay black/dark
+        const isExcluded = 
+          mesh.name.toLowerCase().includes("glass") || 
+          mesh.name.toLowerCase().includes("window") || 
+          mesh.name.toLowerCase().includes("tire") || 
+          mesh.name.toLowerCase().includes("wheel") || 
+          mesh.name.toLowerCase().includes("rubber") ||
+          mesh.name.toLowerCase().includes("plastic") ||
+          mesh.name.toLowerCase().includes("light");
+
+        if (isBodyPart && !isExcluded) {
           mesh.material = new THREE.MeshPhysicalMaterial({
-            color: "#ffffff",
-            metalness: 0.8,
-            roughness: 0.15,
+            color: "#ffffff", 
+            metalness: 0.9,
+            roughness: 0.08,
             clearcoat: 1.0,
-            clearcoatRoughness: 0.03,
+            clearcoatRoughness: 0.02,
             reflectivity: 1.0,
+            envMapIntensity: 2.0, // Boost reflections for that premium pop
           });
         }
       }
