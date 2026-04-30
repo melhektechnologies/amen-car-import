@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,64 +9,78 @@ import { motion, AnimatePresence } from "framer-motion";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/collection", label: "Inventory" },
-  { href: "/services", label: "Import Services" },
-  { href: "/about", label: "About Us" },
+  { href: "/services", label: "Services" },
+  { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  // FIX: track active route to provide visual feedback to user
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <>
-      <nav className="fixed w-full z-40 top-0 left-0 border-b border-white/10 bg-background/85 backdrop-blur-lg">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <nav 
+        className={`fixed w-full z-50 top-0 left-0 transition-all duration-500 px-6 py-4 md:px-12 ${
+          scrolled ? "md:py-4" : "md:py-8"
+        }`}
+      >
+        <div className={`max-w-7xl mx-auto h-16 px-6 rounded-full transition-all duration-500 flex items-center justify-between ${
+          scrolled ? "glass shadow-2xl" : "bg-transparent border border-transparent"
+        }`}>
           {/* Wordmark */}
           <Link
             href="/"
-            className="font-display font-bold text-2xl tracking-tighter text-foreground"
+            className="font-display font-bold text-xl md:text-2xl tracking-tighter text-foreground group"
             onClick={() => setIsOpen(false)}
           >
-            AMEN <span className="text-accent underline decoration-accent/30">CAR IMPORT</span>
+            AMEN <span className="text-accent group-hover:text-accent-hover transition-colors">CAR IMPORT</span>
           </Link>
 
-          {/* Desktop links with active state */}
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+          {/* Desktop links */}
+          <div className="hidden md:flex items-center gap-10 text-xs uppercase tracking-[0.2em] font-bold">
             {navLinks.map((link) => {
               const isActive = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`transition-colors relative py-1 ${
-                    isActive ? "text-white" : "text-muted hover:text-white"
+                  className={`transition-all relative py-1 ${
+                    isActive ? "text-accent" : "text-muted hover:text-white"
                   }`}
                 >
                   {link.label}
-                  {/* Gold underline for active page */}
                   {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-full" />
+                    <motion.span 
+                      layoutId="nav-active"
+                      className="absolute -bottom-1 left-0 right-0 h-px bg-accent" 
+                    />
                   )}
                 </Link>
               );
             })}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <Link
               href="/contact"
-              className="hidden md:block bg-accent hover:bg-accent-hover text-white px-6 py-2.5 rounded-full font-semibold text-sm transition-all shadow-[var(--glow-accent)] hover:shadow-[var(--glow-accent-strong)]"
+              className="hidden md:block bg-accent hover:bg-accent-hover text-white px-6 py-2.5 rounded-full font-bold text-[10px] uppercase tracking-widest transition-all shadow-[var(--glow-accent)] hover:shadow-[var(--glow-accent-strong)] hover:-translate-y-0.5 active:translate-y-0"
             >
-              Get a Quote
+              Get Quote
             </Link>
             <button
-              className="md:hidden p-2 text-muted hover:text-white transition-colors"
+              className="p-2 text-muted hover:text-white transition-colors"
               onClick={() => setIsOpen(!isOpen)}
               aria-label={isOpen ? "Close navigation" : "Open navigation"}
             >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-5 h-5 md:hidden" />}
             </button>
           </div>
         </div>

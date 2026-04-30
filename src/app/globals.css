@@ -16,21 +16,26 @@
 }
 
 :root {
-  --background: #050505;
+  --background: #030303;
   --foreground: #ffffff;
   --accent: #3b82f6; /* Electric Blue */
   --accent-hover: #60a5fa;
-  --surface: #111111;
-  --muted: #888888;
-  --border: rgba(255, 255, 255, 0.1);
+  --surface: #0a0a0a;
+  --muted: #a1a1aa;
+  --border: rgba(255, 255, 255, 0.08);
+
+  /* Obsidian Gradients */
+  --grad-obsidian: linear-gradient(135deg, #0a0a0a 0%, #030303 100%);
+  --grad-glass: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
 
   /* Spacing Tokens */
-  --space-section: 10rem;
-  --space-section-sm: 6rem;
+  --space-section: 12rem;
+  --space-section-sm: 8rem;
 
-  /* Custom Glows */
-  --glow-accent: 0 0 20px rgba(59, 130, 246, 0.5);
-  --glow-accent-strong: 0 0 40px rgba(59, 130, 246, 0.7);
+  /* Premium Glows */
+  --glow-accent: 0 0 30px rgba(59, 130, 246, 0.3);
+  --glow-accent-strong: 0 0 60px rgba(59, 130, 246, 0.5);
+  --glow-white: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 body {
@@ -38,9 +43,37 @@ body {
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image: 
+    radial-gradient(circle at 50% -20%, rgba(59, 130, 246, 0.1), transparent 50%),
+    radial-gradient(circle at 0% 100%, rgba(37, 99, 235, 0.05), transparent 40%);
+  background-attachment: fixed;
 }
 
-/* Utilities */
+/* Premium Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+}
+
+.text-gradient {
+  background: linear-gradient(to bottom, #ffffff 0%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.obsidian-card {
+  background: var(--grad-obsidian);
+  border: 1px solid var(--border);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.obsidian-card:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: var(--glow-accent);
+}
+
 .pb-safe {
   padding-bottom: max(env(safe-area-inset-bottom), 1.5rem);
 }
