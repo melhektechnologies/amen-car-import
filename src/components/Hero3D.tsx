@@ -7,46 +7,46 @@ import * as THREE from "three";
 import Image from "next/image";
 
 // High-Fidelity Car Model
-// Loads a realistic car model for a premium automotive experience
 function ShowroomCar() {
   const groupRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF("/models/car.glb");
 
-  // THE DEFINITIVE FIX: Use useMemo to apply materials SYNCHRONOUSLY.
-  // useEffect had a timing bug — it ran AFTER the first render.
-  // useMemo runs during render, guaranteeing the material is set on frame 0.
-  const paintMaterial = useMemo(() => new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color("#ffffff"),
-    metalness: 0.9,
-    roughness: 0.05,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.02,
-    reflectivity: 1.0,
-    envMapIntensity: 3.0,
-  }), []);
+  // THE REAL FIX: The GLB has baked texture maps that override any color assignment.
+  // Solution: Deep-clone the scene, clone each material, null out the map, set white.
+  const paintedScene = useMemo(() => {
+    // Deep-clone so we never corrupt the cached shared GLTF asset
+    const clone = scene.clone(true);
 
-  useMemo(() => {
-    if (!scene) return;
-    scene.traverse((child) => {
+    clone.traverse((child) => {
       const mesh = child as THREE.Mesh;
       if (!mesh.isMesh) return;
 
-      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-      const newMats = mats.map((mat: any) => {
-        if (!mat) return mat;
+      const applyWhite = (mat: THREE.MeshStandardMaterial | any) => {
+        // Skip transparent parts (glass, windshield)
+        if (mat.transparent && mat.opacity < 0.8) return mat;
 
-        // Preserve glass and transparent parts
-        if (mat.transparent && mat.opacity < 0.95) return mat;
-        // Preserve tires/rubber (very rough, not metallic)
-        if (mat.roughness > 0.7 && mat.metalness < 0.1) return mat;
+        // Clone the material so we don't mutate the shared cached version
+        const m = mat.clone();
 
-        // Override everything else with Pearl White
-        return paintMaterial;
-      });
+        // NULL OUT THE TEXTURE — this is the critical step previous attempts missed
+        // Without this, the dark albedo texture overrides any color we assign
+        m.map = null;
+        m.color = new THREE.Color(1, 1, 1); // Pure white
+        m.metalness = 0.8;
+        m.roughness = 0.15;
+        m.needsUpdate = true;
+        return m;
+      };
 
-      mesh.material = Array.isArray(mesh.material) ? newMats : newMats[0];
+      if (Array.isArray(mesh.material)) {
+        mesh.material = mesh.material.map(applyWhite);
+      } else {
+        mesh.material = applyWhite(mesh.material);
+      }
     });
-  }, [scene, paintMaterial]);
+
+    return clone;
+  }, [scene]);
 
   useFrame((_state, delta) => {
     if (groupRef.current) {
@@ -57,11 +57,11 @@ function ShowroomCar() {
   return (
     <group ref={groupRef}>
       <Float speed={1.5} rotationIntensity={0.05} floatIntensity={0.1}>
-        <primitive 
-          object={scene} 
-          scale={1.4} 
-          position={[0, -0.2, 0]} 
-          rotation={[0, Math.PI / 1.5, 0]} 
+        <primitive
+          object={paintedScene}
+          scale={1.4}
+          position={[0, -0.2, 0]}
+          rotation={[0, Math.PI / 1.5, 0]}
         />
       </Float>
     </group>
