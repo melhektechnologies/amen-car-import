@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, PerspectiveCamera, ContactShadows, Float, OrbitControls, useGLTF } from "@react-three/drei";
-import { Suspense, useRef, useEffect } from "react";
+import { Suspense, useRef, useMemo } from "react";
 import * as THREE from "three";
 import Image from "next/image";
 
@@ -12,58 +12,45 @@ function ShowroomCar() {
   const groupRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF("/models/car.glb");
 
-  // Apply "Pearl White" finish to the car body for high contrast
-  useEffect(() => {
+  // THE DEFINITIVE FIX: Use useMemo to apply materials SYNCHRONOUSLY.
+  // useEffect had a timing bug — it ran AFTER the first render.
+  // useMemo runs during render, guaranteeing the material is set on frame 0.
+  const paintMaterial = useMemo(() => new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color("#ffffff"),
+    metalness: 0.9,
+    roughness: 0.05,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.02,
+    reflectivity: 1.0,
+    envMapIntensity: 3.0,
+  }), []);
+
+  useMemo(() => {
     if (!scene) return;
     scene.traverse((child) => {
-      if ((child as THREE.Mesh).isMesh) {
-        const mesh = child as THREE.Mesh;
-        
-        // Ensure we handle multi-materials if they exist
-        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-        
-        materials.forEach((mat: any, index) => {
-          if (!mat) return;
+      const mesh = child as THREE.Mesh;
+      if (!mesh.isMesh) return;
 
-          // EXPERT PROPERTY-BASED TARGETING
-          // 1. Check if it's opaque (Body paint is never transparent)
-          const isOpaque = mat.transparent === false || mat.opacity > 0.9;
-          
-          // 2. Identify "Black" parts we want to keep (tires, plastic trim)
-          // These usually have very high roughness and no metalness
-          const isTireOrTrim = 
-            mesh.name.toLowerCase().includes("tire") || 
-            mesh.name.toLowerCase().includes("rubber") ||
-            (mat.roughness > 0.7 && mat.metalness < 0.1);
+      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      const newMats = mats.map((mat: any) => {
+        if (!mat) return mat;
 
-          // 3. Identify Glass/Lights (Keep these transparent/emissive)
-          const isGlass = mat.transparent === true || mat.opacity < 0.9 || mesh.name.toLowerCase().includes("glass");
+        // Preserve glass and transparent parts
+        if (mat.transparent && mat.opacity < 0.95) return mat;
+        // Preserve tires/rubber (very rough, not metallic)
+        if (mat.roughness > 0.7 && mat.metalness < 0.1) return mat;
 
-          if (isOpaque && !isTireOrTrim && !isGlass) {
-            const newMat = new THREE.MeshPhysicalMaterial({
-              color: "#ffffff", 
-              metalness: 0.9,
-              roughness: 0.05,
-              clearcoat: 1.0,
-              clearcoatRoughness: 0.02,
-              reflectivity: 1.0,
-              envMapIntensity: 2.5, // Ultra-bright reflections
-            });
+        // Override everything else with Pearl White
+        return paintMaterial;
+      });
 
-            if (Array.isArray(mesh.material)) {
-              mesh.material[index] = newMat;
-            } else {
-              mesh.material = newMat;
-            }
-          }
-        });
-      }
+      mesh.material = Array.isArray(mesh.material) ? newMats : newMats[0];
     });
-  }, [scene]);
+  }, [scene, paintMaterial]);
 
   useFrame((_state, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.05; // elegantly slow rotation
+      groupRef.current.rotation.y += delta * 0.05;
     }
   });
 
