@@ -18,38 +18,45 @@ function ShowroomCar() {
     scene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
-        const mat = mesh.material as THREE.MeshStandardMaterial;
         
-        // EXPERT TARGETING: Catch more naming conventions for the exterior body
-        const isBodyPart = 
-          mesh.name.toLowerCase().includes("body") || 
-          mesh.name.toLowerCase().includes("paint") || 
-          mesh.name.toLowerCase().includes("exterior") ||
-          mesh.name.toLowerCase().includes("shell") ||
-          mesh.name.toLowerCase().includes("frame") ||
-          (mat && (mat.name.toLowerCase().includes("paint") || mat.name.toLowerCase().includes("body")));
+        // Ensure we handle multi-materials if they exist
+        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        
+        materials.forEach((mat: any, index) => {
+          if (!mat) return;
 
-        // Preserve critical parts that should stay black/dark
-        const isExcluded = 
-          mesh.name.toLowerCase().includes("glass") || 
-          mesh.name.toLowerCase().includes("window") || 
-          mesh.name.toLowerCase().includes("tire") || 
-          mesh.name.toLowerCase().includes("wheel") || 
-          mesh.name.toLowerCase().includes("rubber") ||
-          mesh.name.toLowerCase().includes("plastic") ||
-          mesh.name.toLowerCase().includes("light");
+          // EXPERT PROPERTY-BASED TARGETING
+          // 1. Check if it's opaque (Body paint is never transparent)
+          const isOpaque = mat.transparent === false || mat.opacity > 0.9;
+          
+          // 2. Identify "Black" parts we want to keep (tires, plastic trim)
+          // These usually have very high roughness and no metalness
+          const isTireOrTrim = 
+            mesh.name.toLowerCase().includes("tire") || 
+            mesh.name.toLowerCase().includes("rubber") ||
+            (mat.roughness > 0.7 && mat.metalness < 0.1);
 
-        if (isBodyPart && !isExcluded) {
-          mesh.material = new THREE.MeshPhysicalMaterial({
-            color: "#ffffff", 
-            metalness: 0.9,
-            roughness: 0.08,
-            clearcoat: 1.0,
-            clearcoatRoughness: 0.02,
-            reflectivity: 1.0,
-            envMapIntensity: 2.0, // Boost reflections for that premium pop
-          });
-        }
+          // 3. Identify Glass/Lights (Keep these transparent/emissive)
+          const isGlass = mat.transparent === true || mat.opacity < 0.9 || mesh.name.toLowerCase().includes("glass");
+
+          if (isOpaque && !isTireOrTrim && !isGlass) {
+            const newMat = new THREE.MeshPhysicalMaterial({
+              color: "#ffffff", 
+              metalness: 0.9,
+              roughness: 0.05,
+              clearcoat: 1.0,
+              clearcoatRoughness: 0.02,
+              reflectivity: 1.0,
+              envMapIntensity: 2.5, // Ultra-bright reflections
+            });
+
+            if (Array.isArray(mesh.material)) {
+              mesh.material[index] = newMat;
+            } else {
+              mesh.material = newMat;
+            }
+          }
+        });
       }
     });
   }, [scene]);
