@@ -5,6 +5,7 @@ import { Environment, PerspectiveCamera, ContactShadows, Float, OrbitControls, u
 import { Suspense, useRef } from "react";
 import * as THREE from "three";
 import Image from "next/image";
+import { HeroLoader } from "./HeroLoader";
 
 // High-Fidelity Car Model
 // Loads a realistic car model for a premium automotive experience
@@ -78,7 +79,7 @@ export function Hero3D() {
           {/* Front fill */}
           <spotLight position={[8, 3, 8]} intensity={12} angle={0.4} color="#ffffff" />
 
-          <Suspense fallback={null}>
+          <Suspense fallback={<HeroLoader />}>
             <ShowroomCar />
             <Environment preset="night" />
           </Suspense>

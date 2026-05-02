@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Mail, Phone, MessageCircle, MapPin } from "lucide-react";
+import { SITE_CONFIG } from "@/lib/config";
 
 const currentYear = new Date().getFullYear();
 
@@ -21,9 +22,9 @@ export function Footer() {
             </p>
             <div className="flex gap-4">
               {[
-                { icon: Mail, href: "mailto:info@amencarimport.com" },
-                { icon: MessageCircle, href: "https://wa.me/251932159546" },
-                { icon: Phone, href: "tel:+251932159546" }
+                { icon: Mail, href: `mailto:${SITE_CONFIG.contact.email}` },
+                { icon: MessageCircle, href: `https://wa.me/${SITE_CONFIG.contact.whatsapp}` },
+                { icon: Phone, href: `tel:${SITE_CONFIG.contact.whatsapp}` }
               ].map((social, i) => (
                 <a 
                   key={i} 
@@ -63,15 +64,15 @@ export function Footer() {
               <ul className="space-y-4 text-xs">
                 <li className="flex items-start gap-3 text-muted">
                   <MapPin className="w-4 h-4 text-accent shrink-0" />
-                  <span>Bole Road, Addis Ababa, Ethiopia</span>
+                  <span>{SITE_CONFIG.contact.address}</span>
                 </li>
                 <li className="flex items-center gap-3 text-muted">
                   <Phone className="w-4 h-4 text-accent shrink-0" />
-                  <span>+251 93 215 9546</span>
+                  <span>{SITE_CONFIG.contact.phone}</span>
                 </li>
                 <li className="flex items-center gap-3 text-muted">
                   <Mail className="w-4 h-4 text-accent shrink-0" />
-                  <span>info@amencarimport.com</span>
+                  <span>{SITE_CONFIG.contact.email}</span>
                 </li>
               </ul>
             </div>

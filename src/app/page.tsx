@@ -17,6 +17,7 @@ import { Hero3D } from "@/components/Hero3D";
 import { VehicleCard } from "@/components/VehicleCard";
 import { FAQSection } from "@/components/FAQSection";
 import { vehicles } from "@/lib/vehicles";
+import { SITE_CONFIG } from "@/lib/config";
 
 // Pre-select featured vehicles for the homepage
 const featuredSales = vehicles.filter((v) => v.category !== "rental").slice(0, 3);
@@ -80,7 +81,7 @@ export default function Home() {
                 Explore Fleet
               </Link>
               <a
-                href="https://wa.me/251932159546"
+                href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group border border-white/10 hover:border-white/30 glass text-white px-10 py-5 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] transition-all flex items-center gap-3"

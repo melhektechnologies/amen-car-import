@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Gauge, GitMerge, MessageCircle } from "lucide-react";
+import { SITE_CONFIG } from "@/lib/config";
 
 interface VehicleCardProps {
   name: string;
@@ -23,7 +24,7 @@ export function VehicleCard({
   year, transmission, mileage, status, slug,
 }: VehicleCardProps) {
   // Construct WhatsApp inquiry URLs per vehicle so CTAs always work.
-  const waBase = "https://wa.me/251932159546?text=";
+  const waBase = `https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=`;
   const rentMsg = encodeURIComponent(`Hello, I would like to inquire about the ${brand} ${name}. Please advise on availability.`);
   const buyMsg  = encodeURIComponent(`Hello, I am interested in purchasing the ${brand} ${name}. Please share details.`);
 

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://amencarimport.com/sitemap.xml

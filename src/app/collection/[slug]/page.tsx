@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, GitMerge, Gauge, Droplets, Calendar, ShieldCheck } from "lucide-react";
 import { vehicles } from "@/lib/vehicles";
 import { notFound } from "next/navigation";
+import { SITE_CONFIG } from "@/lib/config";
 
 export default function VehicleDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = use(params);
@@ -19,7 +20,7 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ slug: 
     return `${(price / 1000000).toFixed(1)}M ETB`;
   };
 
-  const waBase = "https://wa.me/251932159546?text=";
+  const waBase = `https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=`;
   const buyMsg = encodeURIComponent(`Hello, I am interested in purchasing the ${vehicle.brand} ${vehicle.name}. Please share more details.`);
 
   return (
